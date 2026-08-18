@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Source documents and generated study data can contain copyrighted material.
+*.pdf
+problem_bank/
+

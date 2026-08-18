@@ -1,0 +1,7 @@
+interface:
+  display_name: "PDF Problem Method Practice"
+  short_description: "Build a solution-grounded practice bank from PDFs."
+  default_prompt: "Use $pdf-problem-method-practice to organize this project's problem-set PDFs into a local practice bank."
+policy:
+  allow_implicit_invocation: true
+
