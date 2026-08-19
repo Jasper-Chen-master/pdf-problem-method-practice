@@ -1,3 +1,5 @@
+# Optional Codex-specific manifest. Other agents (Claude Code, OpenCode, Cursor, ...)
+# ignore this file and load the skill purely from SKILL.md frontmatter.
 interface:
   display_name: "PDF Problem Method Practice"
   short_description: "Build a solution-grounded practice bank from PDFs."

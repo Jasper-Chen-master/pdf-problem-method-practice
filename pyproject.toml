@@ -5,11 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pdf-problem-method-practice"
 version = "0.1.0"
-description = "Codex skill and local utilities for solution-grounded PDF problem banks"
+description = "Agent-agnostic skill and local utilities for solution-grounded practice banks from problem PDFs (any subject)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 dependencies = ["pdfplumber>=0.11,<1"]
+
+[tool.setuptools.packages.find]
+include = ["scripts*", "tests*"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<9"]
