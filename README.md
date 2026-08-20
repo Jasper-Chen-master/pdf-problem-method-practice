@@ -1,6 +1,6 @@
 # PDF Problem Method Practice
 
-> 把分散在题集 PDF 里的真实题目，整理成一个可以按“解题方法”检索的本地练习库。
+> 把分散在题集 PDF 里的真实题目，整理成一个可以按“解题方法”检索的本地练习库。无需先配置 Python，支持直接使用 Agent 自带的 PDF 和视觉能力开始。
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![CI](https://github.com/Jasper-Chen-master/pdf-problem-method-practice/actions/workflows/ci.yml/badge.svg)](https://github.com/Jasper-Chen-master/pdf-problem-method-practice/actions/workflows/ci.yml)
@@ -23,14 +23,15 @@
 
 | 特点 | 说明 |
 | --- | --- |
+| Agent 原生优先 | 能直接打开 PDF 的 Agent 可以立即开始，不要求用户先配置 Python。 |
+| 多模态补足版面 | 扫描页、公式、图表、双栏、手写内容或文字层损坏时，使用模型的页面视觉能力复核。 |
+| Python 可选增强 | Python 可提升批量抽取的一致性、可复现性和结构校验能力，但没有 Python 也不阻塞使用。 |
 | 按解法组织 | 以“这道题是怎么解的”为核心，而不是只按章节或主题归类。 |
 | 解答证据优先 | 有参考解答时，从可见的解题步骤确认方法；题目只提到某个定理，不代表实际使用了它。 |
 | 支持方法组合 | 每道题可以关联主方法、次要方法和策略标签，支持检索组合方法。 |
 | 来源可追溯 | 记录源 PDF、题号和页码，分类有疑问时可以回到原文核对。 |
-| 诚实处理不确定性 | 没有解答或边界不清时，记录为 provisional / unresolved，而不是伪装成确定结果。 |
 | 只返回真实题目 | 练习时只从已经索引的题目中选择，默认隐藏解答，不虚构练习题。 |
 | 本地优先 | PDF、抽取文本和生成题库默认保存在本机，并通过 `.gitignore` 排除在版本库之外。 |
-| 与 Agent 解耦 | `SKILL.md` 使用通用技能格式，可用于 Codex、Claude Code、OpenCode、Cursor 等支持项目技能的 Agent。 |
 
 ## 开始使用
 
@@ -63,23 +64,39 @@ git clone https://github.com/Jasper-Chen-master/pdf-problem-method-practice.git 
 
 如果你的 Agent 支持直接读取当前项目里的 `SKILL.md`，也可以不做全局安装，直接在仓库目录中使用它。
 
-### 2. 安装 Python 工具
+### 2. 不需要 Python 也能开始
 
-Python 工具用于 PDF 文本抽取和题库校验，要求 Python 3.10 或更高版本。
+Python 不是使用前置条件。把题目 PDF 放进你的学习项目，然后直接对支持 PDF 或视觉理解的 Agent 发送：
 
-只使用 PDF 抽取和校验功能：
+```text
+使用 $pdf-problem-method-practice 整理这个项目里的题目 PDF，
+优先使用你自带的 PDF 和视觉能力解析页面；按实际解题方法建立或更新本地题库。
+```
+
+Agent 会先使用可检索的文本内容处理清晰页面，再对扫描页、公式、图表、双栏、手写内容或文字顺序异常的页面进行视觉复核。没有 Python 时，仍然可以完成题目提取、分类、建索引和练习检索。
+
+### 3. 可选安装 Python 以提升稳定性
+
+Python 工具不是必须的，但在大批量 PDF、重复构建或需要确定性校验时很有价值。它可以提升：
+
+- 按页批量抽取的一致性；
+- 源文件 SHA-256 和中间记录的可复现性；
+- 题库结构、标签引用和索引的自动校验；
+- Agent 对大量纯文本页面的处理效率。
+
+安装可选工具：
 
 ```bash
 python -m pip install -e .
 ```
 
-本地开发或运行测试：
+开发和测试环境：
 
 ```bash
 python -m pip install -e ".[dev]"
 ```
 
-### 3. 准备题目 PDF
+### 4. 准备题目 PDF
 
 在你的学习项目中建立一个目录，例如：
 
@@ -92,27 +109,6 @@ my-study-project/
 ```
 
 源 PDF 可以放在任意项目目录中；仓库默认忽略所有 `*.pdf` 和 `problem_bank/`，避免把课程资料、答案或个人学习数据提交到 Git。
-
-> 当前抽取工具基于 `pdfplumber`，适合已有文本层的 PDF。扫描版 PDF 需要先用 OCR 生成可搜索文本；本项目暂不内置 OCR。
-
-### 4. 让 Agent 建立题库
-
-在包含 `problems/` 的项目中，对 Agent 发送：
-
-```text
-使用 $pdf-problem-method-practice 整理这个项目里的题目 PDF，
-按实际解题方法建立或更新本地题库，并在完成后运行校验。
-```
-
-Agent 的工作流程是：
-
-1. 按页抽取 PDF 文本；
-2. 识别题目、解答和题号边界；
-3. 配对独立的答案文件（只有题号和上下文都匹配时才配对）；
-4. 依据解答步骤选择主方法、次要方法和策略标签；
-5. 记录来源页码、证据摘要和不确定性；
-6. 重建方法索引和别名索引；
-7. 运行题库校验。
 
 ### 5. 按方法练习
 
@@ -127,7 +123,17 @@ Agent 的工作流程是：
 
 Agent 会从 `problem_bank/indexes/` 中查找题目，并返回题目原文、来源文件和页码。没有匹配记录时，它会说明没有足够的已索引题目，而不是自行生成题目。
 
-## 也可以手动运行工具
+## 推荐的解析策略
+
+1. 清晰的文本页优先使用 Agent 的原生文本读取能力；
+2. 扫描页、公式、图表、双栏、手写内容和文字层损坏页使用原生视觉能力；
+3. 重要公式、负号、上下标、单位、题号和表格单元格必须回看原页；
+4. 记录 `agent_native_text` 或 `agent_native_visual` 等解析来源；
+5. 不确定的题目边界或答案配对进入 `unresolved.jsonl`，不要靠常识补全。
+
+视觉解析可以免去 Python 配置，但可能带来 OCR 误读、公式符号错误、上下文成本、非确定输出以及隐私风险。对于大批量和高复现要求的项目，再安装 Python 工具做辅助抽取和校验。
+
+## 可选的本地工具
 
 ### 抽取 PDF 页面文本
 
@@ -143,7 +149,7 @@ python scripts/extract_pdf_text.py ./problems \
 - `source_pages.jsonl`：每页一条记录，包含源文件、SHA-256、页码和文本；
 - `extraction_errors.jsonl`：无法读取的 PDF 及错误信息。
 
-抽取脚本只负责“按页读取文本”，不会自动判断题目边界，也不会替代 Agent 的分类审核。
+这个脚本不是使用本 skill 的前置条件；它主要用于批量、可复现的文本预处理，不负责识别题目边界或替代 Agent 的视觉审核。
 
 ### 校验题库
 
@@ -151,7 +157,7 @@ python scripts/extract_pdf_text.py ./problems \
 python scripts/validate_bank.py --bank ./problem_bank
 ```
 
-校验器会检查题目 ID 是否重复、标签引用是否存在、页码范围是否合理、方法索引是否指向真实题目，以及已分类题目是否有通过审核的分类记录。
+校验器会检查题目 ID 是否重复、标签引用是否存在、页码范围是否合理、方法索引是否指向真实题目，以及已分类题目是否有通过审核的分类记录。没有 Python 时，Agent 应按相同规则进行手动检查并说明未运行本地校验器。
 
 ## 题库目录结构
 
@@ -170,23 +176,18 @@ problem_bank/
     └── strategies.json
 ```
 
-核心记录保存在 `questions.jsonl`。一条记录通常包含：
+核心记录保存在 `questions.jsonl`。一条记录通常包含题目文本、解答文本、来源页码、方法标签、分类证据，以及可选的 `extraction` 解析来源和视觉复核记录。
 
-- 题目文本和解答文本；
-- 源文件、题号和题目/解答页码；
-- 主方法、次要方法和策略标签；
-- 分类置信度和可见证据摘要；
-- `provisional` 标记，用于没有解答或尚未验证的记录。
-
-完整字段定义见 [references/schemas.md](references/schemas.md)，分类规则见 [references/classification-guide.md](references/classification-guide.md)。
+完整字段定义见 [references/schemas.md](references/schemas.md)，视觉解析规范见 [references/agent-native-pdf.md](references/agent-native-pdf.md)，分类规则见 [references/classification-guide.md](references/classification-guide.md)。
 
 ## 质量边界与隐私
 
 - 源 PDF 按只读输入处理，不修改原文件。
 - 没有提供解答时可以保守分类，但必须标记为 provisional，并说明尚未经过解答验证。
-- 题目边界、答案配对或分类不清时，应保留在 `unresolved.jsonl` 供人工复核，不能强行归类。
-- 题库可能包含完整题目和解答文本，通常属于课程资料或受版权保护内容；除非拥有再分发权限，不要把它们提交到公开仓库或发送到外部服务。
-- 本仓库只提供抽取、组织和校验能力；分类质量仍取决于 PDF 文本质量、答案是否完整以及 Agent 的审核。
+- 视觉模型可能读错公式、符号、表格或页面顺序；重要细节必须回看原页，不确定时标记 unresolved。
+- 如果 Agent 使用托管模型的视觉能力，PDF 内容可能会发送给对应服务；处理课程资料、个人资料或受版权保护内容前，应确认服务设置和再分发权限。
+- 题库可能包含完整题目和解答文本，除非拥有再分发权限，不要把它们提交到公开仓库或发送到外部服务。
+- Python 本地工具可以减少中间数据处理的不确定性，但不能替代 Agent 对版面和解题证据的判断。
 
 ## 开发
 
@@ -205,8 +206,9 @@ python -m pytest
 | --- | --- |
 | `SKILL.md` | Agent 使用的核心技能说明和工作规则 |
 | `agents/openai.yaml` | Codex 的可选显示名称、默认提示词和自动调用配置 |
-| `scripts/extract_pdf_text.py` | PDF 按页抽取为 JSONL |
-| `scripts/validate_bank.py` | 校验生成题库的一致性 |
+| `scripts/extract_pdf_text.py` | 可选的 PDF 按页抽取工具 |
+| `scripts/validate_bank.py` | 可选的题库一致性校验工具 |
+| `references/agent-native-pdf.md` | Agent 原生 PDF 和多模态解析规范 |
 | `references/` | 数据结构、分类指南和复核清单 |
 | `tests/` | Python 工具测试 |
 | `.github/workflows/ci.yml` | GitHub Actions 测试流程 |
