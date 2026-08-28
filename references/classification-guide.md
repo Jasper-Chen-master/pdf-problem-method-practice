@@ -1,23 +1,25 @@
-# Classification Guide
+# 分类指南
 
-Use a method tag for the principal procedure actually carried out in the supplied solution, not merely a keyword mentioned in the prompt. A "method" is the reusable way a problem gets solved: a theorem, a technique, a procedure, or an approach. This guide applies to every subject.
+方法标签应对应参考解答中**实际执行**的主要流程，而不是题面里出现的关键词。"方法"是这道题被解出来的可复用方式：某个技巧、定理、流程或思路。本指南适用于所有学科。
 
-## What Is A Method Tag?
+## 什么是方法标签？
 
-- **Primary method**: the step that makes the solution work. Examples:
-  - Math: integration by parts; Lagrange multipliers; diagonalization.
-  - Physics: free-body diagram + Newton's second law; energy conservation.
-  - Chemistry: balancing redox by half-reactions; ICE table for equilibrium.
-  - English / language: scanning for topic sentence; subject-verb agreement check; paraphrasing with synonyms.
-  - History / humanities: compare-and-contrast structure; sourcing (who-when-why) analysis.
-  - Coding: binary search; dynamic programming with memoization; recursion with a base case.
-- **Secondary method**: a substantial additional procedure, such as changing to polar coordinates after applying Green's theorem (math), or drawing a circuit diagram after setting up Kirchhoff's laws (physics).
-- **Strategy**: a tactical concern rather than the main engine, such as boundary orientation, excluding a singularity, handling an edge case, symmetry, or re-reading the question stem for a hidden constraint.
+- **主方法**：让整个解答成立的那一步。例如：
+  - 数学：分部积分；拉格朗日乘数法；对角化。
+  - 物理：受力分析 + 牛顿第二定律；能量守恒。
+  - 化学：半反应法配平氧化还原；用于化学平衡的 ICE 表。
+  - 语言：寻找主题句；主谓一致检查；同义替换改写。
+  - 人文：对比结构；史料甄别（谁-何时-为何）分析。
+  - 编程：二分查找；带记忆化的动态规划；带基准情形的递归。
+- **次要方法**：实质性的附加流程，例如应用格林公式后换成极坐标（数学），或建立基尔霍夫方程后画出电路图（物理）。
+- **策略**：战术层面的考虑，而不是解题的主引擎，例如处理边界方向、排除奇点、处理边缘情况、利用对称性，或重读题干发现隐藏约束。
 
-## Tag Discipline
+## 标签纪律
 
-Prefer an existing active tag with the same meaning. Create a new tag only when it names a reusable technique likely to occur in multiple problems. Keep names concise and canonical (e.g. `method_integration_by_parts`, `method_redox_half_reaction`, `method_topic_sentence`); add common phrasings as aliases.
+优先复用含义相同的现有 active 标签。只有当某个可复用技巧很可能在多道题中出现时才新建标签。命名保持简洁和规范化（如 `method_integration_by_parts`、`method_redox_half_reaction`、`method_topic_sentence`），常见说法加进 aliases。
 
-## No Solution Supplied
+淘汰标签时把 `status` 改为 `retired`（保留历史引用），不要物理删除。`retired` 标签不能被新题目引用。
 
-When a solution is not supplied, classify conservatively from the prompt, set `provisional` to `true`, use lower confidence, and state that the method has not been solution-verified.
+## 没有提供解答时
+
+从题面保守分类，把 `provisional` 设为 `true`，使用较低的置信度，并明确说明该方法尚未经过解答验证。题目 `status` 保持 `pending`，不得标记为 `classified`。
