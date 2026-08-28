@@ -1,9 +1,8 @@
-# Optional Codex-specific manifest. Other agents (Claude Code, OpenCode, Cursor, ...)
-# ignore this file and load the skill purely from SKILL.md frontmatter.
+# 可选的 Codex 专用清单。其他 Agent（Claude Code、OpenCode、Cursor 等）
+# 会忽略此文件，仅通过 SKILL.md frontmatter 加载技能。
 interface:
-  display_name: "PDF Problem Method Practice"
-  short_description: "Build a solution-grounded practice bank from PDFs."
-  default_prompt: "Use $pdf-problem-method-practice to organize this project's problem-set PDFs into a local practice bank."
+  display_name: "PDF 题目方法练习库"
+  short_description: "把题集 PDF 整理成以解答为依据的本地练习题库。"
+  default_prompt: "使用 $pdf-problem-method-practice 把本项目里的题集 PDF 整理成本地练习题库。"
 policy:
   allow_implicit_invocation: true
-

@@ -146,8 +146,10 @@ python scripts/extract_pdf_text.py ./problems \
 
 输出包括：
 
-- `source_pages.jsonl`：每页一条记录，包含源文件、SHA-256、页码和文本；
+- `source_pages.jsonl`：每页一条记录，包含源文件、SHA-256、页码、文本和抽取方式；
 - `extraction_errors.jsonl`：无法读取的 PDF 及错误信息。
+
+重复运行时按 (源文件, SHA-256) 增量跳过未变化的 PDF，只重抽新增或改动的文件；加 `--force` 可忽略缓存、强制全量重抽。已删除或已变化 PDF 的旧页记录会在下次运行时自动清理。
 
 这个脚本不是使用本 skill 的前置条件；它主要用于批量、可复现的文本预处理，不负责识别题目边界或替代 Agent 的视觉审核。
 
@@ -157,7 +159,7 @@ python scripts/extract_pdf_text.py ./problems \
 python scripts/validate_bank.py --bank ./problem_bank
 ```
 
-校验器会检查题目 ID 是否重复、标签引用是否存在、页码范围是否合理、方法索引是否指向真实题目，以及已分类题目是否有通过审核的分类记录。没有 Python 时，Agent 应按相同规则进行手动检查并说明未运行本地校验器。
+校验器输出中文错误清单，会检查：题目 ID 是否重复、`status` 枚举是否合法、标签引用是否存在且激活、页码范围是否合理、索引与题库是否双向一致（包括"改了题库忘了重建索引"的情况）、下架题目（`active=false`）是否已移出索引、已分类题目是否有通过审核的分类记录，以及 `unresolved.jsonl`（若存在）的引用有效性。没有 Python 时，Agent 应按 `references/schemas.md` 末尾的清单进行手动检查并说明未运行本地校验器。
 
 ## 题库目录结构
 
@@ -171,6 +173,7 @@ problem_bank/
 ├── strategy_tags.json
 ├── aliases.json
 ├── classification_runs.jsonl
+├── unresolved.jsonl        （可选：无法可靠完成抽取或配对的记录）
 └── indexes/
     ├── methods.json
     └── strategies.json

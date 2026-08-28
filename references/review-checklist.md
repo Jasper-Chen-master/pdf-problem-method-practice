@@ -1,14 +1,14 @@
-# Review Checklist
+# 复核清单
 
-Use this checklist when extraction or classification is ambiguous.
+抽取或分类含糊时，按此清单复核。
 
-1. Confirm the question starts and ends at the actual numbered boundary, not a section header, footer, or the next topic's notes.
-2. Verify a separate answer-key item against both its number and its subject context before pairing it.
-3. Reopen or visually inspect the original PDF page when the text layer is empty, sparse, garbled, multi-column, formula-heavy, tabular, or spatially arranged.
-4. Check every high-impact visual detail: minus signs, exponents, subscripts, units, equation boundaries, table cells, diagram labels, and question numbers.
-5. Confirm the source file and page range for every question and solution.
-6. Keep extraction provenance separate from classification confidence. A clear-looking transcription is not proof that it is correct.
-7. Check that the chosen method is evidenced by solution steps, not an unrelated word appearing in nearby text.
-8. If a hosted model may receive a private or copyrighted PDF, surface that privacy and redistribution risk to the user.
-9. Mark uncertain parsing, unmatched solutions, and unresolved visual details in `unresolved.jsonl` instead of forcing a low-quality record.
-10. Run the deterministic validator when Python is available; if it is not, perform the same structural checks manually and state that the validator was not run.
+1. 确认题目起止于真实的编号边界，而不是章节标题、页脚或下一个主题的笔记。
+2. 单独提供的答案键必须同时通过题号和学科语境两重核对，才能配对。
+3. 文本层为空、稀疏、乱码、多栏、公式密集、表格化或空间排版时，重新打开或视觉检视原始 PDF 页面。
+4. 核对每个高影响的视觉细节：负号、指数、下标、单位、公式边界、表格单元格、图形标注和题号。
+5. 确认每道题和解答的源文件与页码范围。
+6. 抽取来源与分类置信度分开记录。"看起来很清楚"的转写不是正确的证明。
+7. 确认所选方法有解答步骤支撑，而不是邻近文本里出现的无关词汇。
+8. 托管模型可能接收私有或版权 PDF 时，向用户明示隐私与再分发风险。
+9. 不确定的解析、未配对的解答和存疑的视觉细节写入 `unresolved.jsonl`，不要硬凑低质量记录。
+10. Python 可用时运行确定性校验器；不可用时手动执行相同结构检查，并说明未运行校验器（清单见 references/schemas.md 末尾）。

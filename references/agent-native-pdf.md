@@ -1,66 +1,66 @@
-# Agent-Native PDF Processing
+# Agent 原生 PDF 处理
 
-This skill is designed to work without a Python environment. When the current agent can open PDFs and inspect page images, use that capability first. Python is an optional enhancement for larger or more reproducible workflows.
+本技能设计为可以在没有 Python 环境的情况下工作。当前 Agent 能打开 PDF 并检视页面图像时，优先使用该能力。Python 是面向更大规模或更强可复现性工作流的可选增强。
 
-## Recommended decision
+## 推荐决策
 
-| Situation | Default action |
+| 情况 | 默认动作 |
 |---|---|
-| The agent can read the PDF and the text layer is clean | Use native PDF text understanding and cite page numbers. |
-| The page is scanned, image-heavy, formula-heavy, tabular, multi-column, handwritten, or visually arranged | Use native visual understanding on the specific page or a small page batch. |
-| The text layer is empty, sparse, garbled, or in the wrong order | Use visual review, then compare the result with the page image. |
-| The corpus is very large or needs repeatable batch extraction | Optionally run the Python extractor, then use the agent for layout-sensitive pages and classification. |
-| The agent cannot open the PDF | Ask for extracted text or use the optional Python utility if the user can provide an environment. |
+| Agent 能读 PDF 且文本层干净 | 使用原生 PDF 文本理解并标注页码。 |
+| 页面是扫描件、图像密集、公式密集、表格、多栏、手写或视觉排版 | 对该页或小批次页面使用原生视觉理解。 |
+| 文本层为空、稀疏、乱码或乱序 | 先视觉复核，再与页面图像比对。 |
+| 语料很大或需要可复现的批量抽取 | 可选运行 Python 抽取器，再由 Agent 处理版面敏感页和分类。 |
+| Agent 无法打开 PDF | 请用户提供抽取后的文本；用户有环境时可用可选 Python 工具。 |
 
-## Agent-native workflow
+## Agent 原生工作流
 
-1. Confirm that the agent can access the PDF and identify the relevant file names.
-2. Start with page-level text or native document retrieval when available.
-3. Triage pages that need visual review. Do not send an entire large corpus through visual reasoning if only a few pages are difficult.
-4. Inspect difficult pages in small batches. Preserve page numbers and source file names in every note.
-5. Transcribe only the information needed for the question or solution record. Do not silently fill gaps from domain knowledge.
-6. Recheck equations, minus signs, exponents, subscripts, units, table cells, diagram labels, and question numbers against the original page.
-7. Mark the record as visually reviewed and record the reason. If an important detail remains unclear, write an unresolved record instead of guessing.
-8. Classify the method from the supplied solution evidence, not from the visual appearance or a keyword in the prompt.
-9. Build indexes and validate them. Use the Python validator when available; otherwise perform the checks described in `scripts/validate_bank.py` manually.
+1. 确认 Agent 能访问 PDF，并识别相关文件名。
+2. 优先使用按页文本或原生文档检索（如可用）。
+3. 筛出需要视觉复核的页面。只有少数难页时，不要把整个大语料都送进视觉推理。
+4. 小批次检视困难页面。每条笔记都保留页码和源文件名。
+5. 只转写题目或解答记录所需的信息。不要用领域知识悄悄填补空白。
+6. 对照原始页面复查公式、负号、指数、下标、单位、表格单元格、图形标注和题号。
+7. 标记记录已做视觉复核并记录原因。重要细节仍不清楚时，写入 `unresolved.jsonl`，不要猜。
+8. 从参考解答的证据分类方法，而不是从视觉外观或题面关键词。
+9. 建立索引并校验。Python 校验器可用时使用它；否则手动执行 `scripts/validate_bank.py` 描述的检查。
 
-## Prompt template for a visual page review
+## 视觉页面复核的提示词模板
 
-Use a constrained request such as:
+使用受限请求，例如：
 
 ```text
-Inspect only pages 3-4 of problems/homework01.pdf.
-Use the original page image as the source of truth. Return:
-1. the visible question number and exact page range;
-2. the question text needed for the practice record;
-3. the visible solution text or a concise transcription of its steps;
-4. any formula, sign, subscript, table, diagram, or reading-order uncertainty;
-5. whether the page needs human review.
+只检视 problems/homework01.pdf 的第 3-4 页。
+以原始页面图像为准。返回：
+1. 可见的题号和确切页码范围；
+2. 练习记录所需的题面文本；
+3. 可见的解答文本或其步骤的简要转写；
+4. 任何公式、符号、下标、表格、图形或阅读顺序上的不确定性；
+5. 该页是否需要人工复核。
 
-Do not infer missing text from general knowledge and do not classify the method until the extraction is checked.
+不要凭通用知识推断缺失文本；抽取核对完成前不要分类方法。
 ```
 
-## Risks and controls
+## 风险与控制
 
-| Risk | Control |
+| 风险 | 控制手段 |
 |---|---|
-| OCR or visual transcription error | Recheck important symbols and source pages; keep a visual-review note. |
-| Hallucinated missing text or reconstructed diagrams | Preserve gaps as unresolved; never complete them from domain knowledge. |
-| Wrong question/solution boundary | Use page layout and numbering; inspect adjacent pages before pairing. |
-| Math or science notation error | Verify signs, exponents, subscripts, units, orientation, and labels against the image. |
-| Context-window or latency cost | Process small page batches and use text retrieval for clean pages. |
-| Non-deterministic output | Preserve source page citations, confidence, and review status; rerun only when needed. |
-| Privacy or copyright exposure | Tell the user when a hosted model may receive PDF content; avoid public or external storage without permission. |
-| False confidence from a clean-looking transcription | Keep extraction provenance separate from classification confidence. |
+| OCR 或视觉转写错误 | 复查重要符号和源页面；保留视觉复核备注。 |
+| 幻觉补全缺失文本或重建图形 | 把空白保留为未决记录；绝不用领域知识补全。 |
+| 题目/解答边界判断错误 | 依据页面版面和编号；配对前检视相邻页。 |
+| 数学或理科记号错误 | 对照图像核对符号、指数、下标、单位、方向和标注。 |
+| 上下文窗口或延迟成本 | 小批次处理页面；干净页面用文本检索。 |
+| 输出不确定 | 保留源页码引用、置信度和复核状态；必要时才重跑。 |
+| 隐私或版权暴露 | 当托管模型可能接收 PDF 内容时告知用户；未经许可避免公开或外部存储。 |
+| 转写"看起来干净"带来的虚假信心 | 抽取来源与分类置信度分开记录。 |
 
-## Provenance
+## 抽取来源
 
-For each question, record an optional `extraction` object:
+每道题记录一个可选的 `extraction` 对象：
 
-- `mode`: `agent_native_text`, `agent_native_visual`, `python_pdfplumber`, or `hybrid`;
-- `pages_reviewed`: source pages inspected visually;
-- `signals`: why visual review was used, such as `scan`, `sparse_text`, `formula`, `table`, or `diagram`;
-- `verified_against_source`: whether important details were checked against the original page;
-- `notes`: a short, visible note about limitations.
+- `mode`：`agent_native_text`、`agent_native_visual`、`python_pdfplumber` 或 `hybrid`；
+- `pages_reviewed`：视觉检视过的源页面；
+- `signals`：使用视觉复核的原因，如 `scan`、`sparse_text`、`formula`、`table`、`diagram`；
+- `verified_against_source`：重要细节是否已对照原始页面核对；
+- `notes`：关于局限的简短可见备注。
 
-Do not store hidden chain-of-thought or private model traces.
+不要存放隐藏的思维链或私有模型痕迹。
